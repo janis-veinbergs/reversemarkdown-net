@@ -17,19 +17,18 @@ namespace ReverseMarkdown.Converters
             }
         }
 
-        public override string Convert(HtmlNode node)
-        {
-            var content = TreatChildren(node);
-            
-            if (string.IsNullOrEmpty(content.Trim()) || AlreadyItalic(node))
-            {
-                return content;
-            }
-            else
-            {
+		public override string Convert(HtmlNode node)
+		{
+			string content = this.TreatChildren(node);
+			if (Converter.Config.TextNotMarkdown || string.IsNullOrEmpty(content.Trim()) || AlreadyItalic(node))
+			{
+				return content;
+			}
+			else
+			{
                 return $"*{content.Trim()}*";
             }
-        }
+		}
 
         private bool AlreadyItalic(HtmlNode node)
         {

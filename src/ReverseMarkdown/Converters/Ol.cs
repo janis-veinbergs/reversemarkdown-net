@@ -6,14 +6,12 @@ namespace ReverseMarkdown.Converters
 {
 	public class Ol : ConverterBase
 	{
-		public Ol(Converter converter) : base(converter)
+		public Ol(Converter converter)
+			: base(converter)
 		{
-			var elements = new [] { "ol", "ul" };
-
-			foreach (var element in elements)
-			{
-				Converter.Register(element, this);
-			}
+			this.Converter.Register("ol", this);
+			this.Converter.Register("ul", this);
+			this.Converter.Register("dl", this);
 		}
 
 		public override string Convert(HtmlNode node)

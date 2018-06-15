@@ -14,6 +14,9 @@ namespace ReverseMarkdown
         private readonly IConverter _dropTagsConverter;
         private readonly IConverter _byPassTagsConverter;
 
+        private static readonly string _nl = Environment.NewLine;
+        private static readonly string _nlnl = _nl + _nl;
+        private static readonly string _nlnlnl = _nlnl + _nl;
         public Converter() : this(new Config()) {}
 
         public Converter(Config config)
@@ -48,10 +51,28 @@ namespace ReverseMarkdown
 
             var root = doc.DocumentNode;
 
-            var result = Lookup(root.Name).Convert(root);
+            var body = root.SelectSingleNode("//body");
+            if (body != null)
+            {
+                return this.Lookup(body.Name).Convert(body);
+            }
 
-            return result;
-        }
+			string result = this.Lookup(root.Name).Convert(root);
+
+            if (Config.CompressNewlines)
+            {
+                int oldlen = result.Length;
+                while (true)
+                {
+                    result = result.Replace(_nlnlnl, _nlnl);
+                    int newlen = result.Length;
+                    if (newlen == oldlen) break;
+                    oldlen = newlen;
+                }
+            }
+
+			return result;
+		}
 
         public void Register(string tagName, IConverter converter)
         {
@@ -63,7 +84,7 @@ namespace ReverseMarkdown
             return _converters.ContainsKey(tagName) ? _converters[tagName] : GetDefaultConverter(tagName);
         }
 
-        private IConverter GetDefaultConverter(string tagName)
+        public IEnumerable<KeyValuePair<string, int>> DefaultedTagCounts
         {
             get { return _defaultedTagCount; }
         }
@@ -89,7 +110,7 @@ namespace ReverseMarkdown
                 }
                 _defaultedTagCount[tagName] = count + 1;
             }
-			switch (this._config.UnknownTags)
+			switch (this.Config.UnknownTags)
 			{
 				case Config.UnknownTagsOption.PassThrough:
                     return _passThroughTagsConverter;

@@ -16,18 +16,18 @@ namespace ReverseMarkdown.Converters
             }
         }
 
-        public override string Convert(HtmlNode node)
-        {
-            var content = this.TreatChildren(node);
-            if (string.IsNullOrEmpty(content.Trim()) || AlreadyBold(node))
-            {
-                return content;
-            }
-            else
-            {
+		public override string Convert(HtmlNode node)
+		{
+			string content = this.TreatChildren(node);
+			if (this.Converter.Config.TextNotMarkdown || string.IsNullOrEmpty(content.Trim()) || AlreadyBold(node))
+			{
+				return content;
+			}
+			else
+			{
                 return $"**{content.Trim()}**";
             }
-        }
+		}
 
         private static bool AlreadyBold(HtmlNode node)
         {

@@ -9,11 +9,13 @@ namespace ReverseMarkdown.Converters
             Converter.Register("img", this);
         }
 
-        public override string Convert(HtmlNode node)
-        {
-            var alt = node.GetAttributeValue("alt", string.Empty);
-            var src = node.GetAttributeValue("src", string.Empty);
-            var title = ExtractTitle(node);
+		public override string Convert(HtmlNode node)
+		{
+            if (Converter.Config.TextNotMarkdown)
+                return "";
+			string alt = node.GetAttributeValue("alt", string.Empty);
+			string src = node.GetAttributeValue("src", string.Empty);
+			string title = this.ExtractTitle(node);
 
             title = title.Length > 0 ? $" \"{title}\"" : "";
 
