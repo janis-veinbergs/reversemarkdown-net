@@ -157,13 +157,13 @@ namespace ReverseMarkdown.Test
             CheckConversion(html, expected);
         }
 
-        [Fact]
-        public void WhenThereIsEmptyBlockquoteTag_ThenConvertToMarkdownBlockquote()
-        {
-            const string html = @"This text has <blockquote></blockquote>. This text appear after header.";
-            var expected = $"This text has {Environment.NewLine}{Environment.NewLine}{Environment.NewLine}. This text appear after header.";
-            CheckConversion(html, expected);
-        }
+		[Fact]
+		public void WhenThereIsEmptyBlockquoteTag_ThenConvertToMarkdownBlockquote()
+		{
+			const string html = @"This text has <blockquote></blockquote>. This text appear after header.";
+			string expected = $"This text has {Environment.NewLine}{Environment.NewLine}. This text appear after header.";
+			CheckConversion(html, expected);
+		}
 
         [Fact]
         public void WhenThereIsParagraphTag_ThenConvertToMarkdownDoubleLineBreakBeforeAndAfter()
@@ -173,13 +173,13 @@ namespace ReverseMarkdown.Test
             CheckConversion(html, expected);
         }
 
-        [Fact]
-        public void WhenThereIsHorizontalRule_ThenConvertToMarkdownHorizontalRule()
-        {
-            const string html = @"This text has horizontal rule.<hr/>Next line of text";
-            var expected = $"This text has horizontal rule.{Environment.NewLine}* * *{Environment.NewLine}Next line of text";
-            CheckConversion(html, expected);
-        }
+		[Fact]
+		public void WhenThereIsHorizontalRule_ThenConvertToMarkdownHorizontalRule()
+		{
+			const string html = @"This text has horizontal rule.<hr/>Next line of text";
+			string expected = $"This text has horizontal rule.{Environment.NewLine}{Environment.NewLine}* * *{Environment.NewLine}Next line of text";
+			CheckConversion(html, expected);
+		}
 
         [Fact]
         public void WhenThereIsImgTag_ThenConvertToMarkdownImage()
@@ -213,13 +213,13 @@ namespace ReverseMarkdown.Test
             CheckConversion(html, expected);
         }
 
-        [Fact]
-        public void WhenThereIsEmptyPreTag_ThenConvertToMarkdownPre()
-        {
-            const string html = @"This text has pre tag content <pre><br/ ></pre>Next line of text";
-            var expected = $"This text has pre tag content {Environment.NewLine}{Environment.NewLine}{Environment.NewLine}Next line of text";
-            CheckConversion(html, expected);
-        }
+		[Fact]
+		public void WhenThereIsEmptyPreTag_ThenConvertToMarkdownPre()
+		{
+			const string html = @"This text has pre tag content <pre><br/ ></pre>Next line of text";
+			string expected = $"This text has pre tag content {Environment.NewLine}{Environment.NewLine}Next line of text";
+			CheckConversion(html, expected);
+		}
 
         [Fact]
         public void WhenThereIsUnorderedList_ThenConvertToMarkdownList()
