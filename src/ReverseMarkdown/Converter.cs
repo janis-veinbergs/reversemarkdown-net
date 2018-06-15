@@ -65,9 +65,33 @@ namespace ReverseMarkdown
 
         private IConverter GetDefaultConverter(string tagName)
         {
-            switch (Config.UnknownTags)
+            get { return _defaultedTagCount; }
+        }
+
+        public string DefaultedTagContext(string tagName)
+        {
+            return _defaultedTagContext[tagName];
+        }
+
+        public string CurrentContext = null;
+
+        protected Dictionary<string, int> _defaultedTagCount = new Dictionary<string, int>();
+        protected Dictionary<string, string> _defaultedTagContext = new Dictionary<string, string>();
+
+		protected IConverter GetDefaultConverter(string tagName)
+		{
+            if (CurrentContext != null)
             {
-                case Config.UnknownTagsOption.PassThrough:
+                if (!_defaultedTagCount.TryGetValue(tagName, out int count))
+                {
+                    count = 0;
+                    _defaultedTagContext[tagName] = CurrentContext;
+                }
+                _defaultedTagCount[tagName] = count + 1;
+            }
+			switch (this._config.UnknownTags)
+			{
+				case Config.UnknownTagsOption.PassThrough:
                     return _passThroughTagsConverter;
                 case Config.UnknownTagsOption.Drop:
                     return _dropTagsConverter;
