@@ -16,7 +16,7 @@ namespace ReverseMarkdown.Converters
         {
             var content = TreatChildren(node).Trim();
 
-            if (this.Converter.Config.TextNotMarkdown)
+            if (this.Converter.Config.BarePlaintext)
                 return content;
 
 			// get the lines based on carriage return and prefix "> " to each line

@@ -19,7 +19,7 @@ namespace ReverseMarkdown.Converters
 		public override string Convert(HtmlNode node)
 		{
 			string content = this.TreatChildren(node);
-			if (this.Converter.Config.TextNotMarkdown || string.IsNullOrEmpty(content.Trim()) || AlreadyBold(node))
+			if (this.Converter.Config.BarePlaintext || string.IsNullOrEmpty(content.Trim()) || AlreadyBold(node))
 			{
 				return content;
 			}

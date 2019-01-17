@@ -11,7 +11,7 @@ namespace ReverseMarkdown.Converters
 
 		public override string Convert(HtmlNode node)
 		{
-            if (Converter.Config.TextNotMarkdown)
+            if (Converter.Config.BarePlaintext)
                 return "";
 			string alt = node.GetAttributeValue("alt", string.Empty);
 			string src = node.GetAttributeValue("src", string.Empty);

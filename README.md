@@ -29,12 +29,16 @@ var config = new ReverseMarkdown.Config(UnknownTagsOption.PassThrough,
 var converter = new ReverseMarkdown.Converter(config);
 ```
 
-### UnknownTags config - how to handle unknown tags. 
-Valid options are:
-* `UnknownTagsOption.PassThrough` - Include the unknown tag completely into the result. This is the default
-* `UnknownTagsOption.Drop` - Drop the unknown tag and its content
-* `UnknownTagsOption.Bypass` - Ignore the unknown tag but try to convert its content
-* `UnknownTagsOption.Raise` - Raise an error to let you know
+## Configuration options
+* `GithubFlavored` - Github style markdown for br, pre and table. Default is false
+* `RemoveComments` - Remove comment tags with text. Default is true
+* `BarePlaintext` - Convert to bare plaintext, not markdown. Default is false
+* `CompressNewlines` - Cleans output so that it doesn't contain double newline characters. Default is true
+* `UnknownTags` - how to handle unknown tags. 
+  * `UnknownTagsOption.PassThrough` - Include the unknown tag completely into the result. That is, the tag along with the text will be left in output. This is the default
+  * `UnknownTagsOption.Drop` - Drop the unknown tag and its content
+  * `UnknownTagsOption.Bypass` - Ignore the unknown tag but try to convert its content
+  * `UnknownTagsOption.Raise` - Raise an error to let you know
 
 > Note that UnknownTags config has been changed to an enumeration in v2.0.0 (breaking change)
 
