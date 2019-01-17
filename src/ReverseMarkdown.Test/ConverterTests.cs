@@ -177,7 +177,7 @@ namespace ReverseMarkdown.Test
 		public void WhenThereIsHorizontalRule_ThenConvertToMarkdownHorizontalRule()
 		{
 			const string html = @"This text has horizontal rule.<hr/>Next line of text";
-			string expected = $"This text has horizontal rule.{Environment.NewLine}{Environment.NewLine}* * *{Environment.NewLine}Next line of text";
+			string expected = $"This text has horizontal rule.{Environment.NewLine}* * *{Environment.NewLine}Next line of text";
 			CheckConversion(html, expected);
 		}
 

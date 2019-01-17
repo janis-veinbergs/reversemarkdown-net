@@ -1,39 +1,27 @@
 ﻿namespace ReverseMarkdown
 {
 	public class Config
-	{
-		private UnknownTagsOption _unknownTags = UnknownTagsOption.PassThrough;
-		private bool _githubFlavored = false;
-		private bool _textNotMarkdown = false;
-        private bool _compressNewlines = true;
-		
-		public Config()
-		{
-		}
+	{	
+		public Config() : this(UnknownTagsOption.PassThrough, false, true, false, true) {} 
 
-		public Config(UnknownTagsOption unknownTags=UnknownTagsOption.PassThrough, bool githubFlavored=false, bool textNotMarkdown=false, bool compressNewlines = true)
+		public Config(UnknownTagsOption unknownTags=UnknownTagsOption.PassThrough, bool githubFlavored=false, bool removeComments = true, bool textNotMarkdown=false, bool compressNewlines = true)
 		{
-			this._unknownTags = unknownTags;
-			this._githubFlavored = githubFlavored;
-            this._textNotMarkdown = textNotMarkdown;
-            this._compressNewlines = compressNewlines;
-		}
+			this.UnknownTags = unknownTags;
+			this.GithubFlavored = githubFlavored;
+            this.TextNotMarkdown = textNotMarkdown;
+            this.CompressNewlines = compressNewlines;
+            this.RemoveComments = removeComments;
+        }
 
-        public UnknownTagsOption UnknownTags { get; } = UnknownTagsOption.PassThrough;
+        public UnknownTagsOption UnknownTags { get; }
 
         public bool GithubFlavored { get; }
 
         public bool RemoveComments { get; }
 
-        public bool TextNotMarkdown
-        {
-			get { return this._textNotMarkdown; }
-        }
+        public bool TextNotMarkdown { get; }
 
-        public bool CompressNewlines
-        {
-            get { return this._compressNewlines; }
-        }
+        public bool CompressNewlines { get; }
 
         public enum UnknownTagsOption
         {
