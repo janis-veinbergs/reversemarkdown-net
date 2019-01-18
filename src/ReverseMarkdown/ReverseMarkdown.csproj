@@ -13,10 +13,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Jānis Veinbergs</Company>
     <RepositoryUrl></RepositoryUrl>
-    <Version>1.0.2</Version>
-    <FileVersion>1.0.2.0</FileVersion>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <PackageReleaseNotes>Change assembly name to ReverseMarkdownJV</PackageReleaseNotes>
+    <Version>1.0.3</Version>
+    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <PackageReleaseNotes>Introduce new options: HrefHandling (Smart) and WhitelistUriSchemes</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.8.12" />
