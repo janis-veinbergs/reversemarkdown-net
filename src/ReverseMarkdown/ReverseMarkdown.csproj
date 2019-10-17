@@ -2,27 +2,23 @@
   <PropertyGroup>
     <Description>ReverseMarkdown is a Html to Markdown converter library in c#</Description>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <Authors>Babu Annamalai</Authors>
-    <TargetFrameworks>net46;netstandard1.6;netstandard2.0</TargetFrameworks>
-    <AssemblyName>ReverseMarkdown</AssemblyName>
+    <Authors>Babu Annamalai; Jānis Veinbergs</Authors>
+    <TargetFrameworks>net452;netstandard1.6;netstandard2.0</TargetFrameworks>
+    <AssemblyName>ReverseMarkdownJV</AssemblyName>
     <RootNamespace>ReverseMarkdown</RootNamespace>
-    <PackageId>ReverseMarkdown</PackageId>
+    <PackageId>ReverseMarkdownJV</PackageId>
     <PackageProjectUrl>https://github.com/mysticmind/reversemarkdown-net</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>htmltomarkdown;html2markdown;converthtml;htmlconverter;html;converter;markdown</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Jānis Veinbergs</Company>
+    <RepositoryUrl></RepositoryUrl>
+    <Version>1.0.3</Version>
+    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <PackageReleaseNotes>Introduce new options: HrefHandling (Smart) and WhitelistUriSchemes</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.1" />
-  </ItemGroup>
-  <!--SourceLink specific settings-->
-  <PropertyGroup>
-    <RepositoryUrl>https://github.com/mysticmind/reversemarkdown-net.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
+    <PackageReference Include="HtmlAgilityPack" Version="1.8.12" />
   </ItemGroup>
 </Project>

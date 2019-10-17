@@ -32,8 +32,7 @@ namespace ReverseMarkdown.Test
         }
 
         [Fact]
-        public void WhenThereIsHtmlLinkWithTitle_ThenConvertToMarkdownLink()
-        {
+        public void WhenThereIsHtmlLinkWithTitle_ThenConvertToMarkdownLink() {
             const string html = @"This is <a href=""http://test.com"" title=""with title"">a link</a>";
             const string expected = @"This is [a link](http://test.com ""with title"")";
             CheckConversion(html, expected);
@@ -49,232 +48,176 @@ namespace ReverseMarkdown.Test
         }
 
         [Fact]
-        public void WhenThereIsHtmlLinkNotWhitelisted_ThenBypass()
-        {
-            const string html =
-                @"Leave <a href=""http://example.com"">http</a>, <a href=""https://example.com"">https</a>, <a href=""ftp://example.com"">ftp</a>, <a href=""ftps://example.com"">ftps</a>, <a href=""file://example.com"">file</a>. Remove <a href=""data:text/plain;charset=UTF-8;page=21,the%20data:1234,5678"">data</a>, <a href=""tel://example.com"">tel</a> and <a href=""whatever://example.com"">whatever</a>";
-            const string expected =
-                @"Leave [http](http://example.com), [https](https://example.com), [ftp](ftp://example.com), [ftps](ftps://example.com), [file](file://example.com). Remove data, tel and whatever";
-            CheckConversion(html, expected, new Config()
-            {
-                WhitelistUriSchemes = new[] {"http", "https", "ftp", "ftps", "file"}
+        public void WhenThereIsHtmlLinkNotWhitelisted_ThenBypass() {
+            const string html = @"Leave <a href=""http://example.com"">http</a>, <a href=""https://example.com"">https</a>, <a href=""ftp://example.com"">ftp</a>, <a href=""ftps://example.com"">ftps</a>, <a href=""file://example.com"">file</a>. Remove <a href=""data:text/plain;charset=UTF-8;page=21,the%20data:1234,5678"">data</a>, <a href=""tel://example.com"">tel</a> and <a href=""whatever://example.com"">whatever</a>";
+            const string expected = @"Leave [http](http://example.com), [https](https://example.com), [ftp](ftp://example.com), [ftps](ftps://example.com), [file](file://example.com). Remove data, tel and whatever";
+            CheckConversion(html, expected, new Config() {
+                WhitelistUriSchemes = new string[] {"http", "https", "ftp", "ftps", "file"}
             });
         }
 
         [Fact]
-        public void WhenThereHtmlWithHrefAndNoSchema_WhitelistedEmptyString_ThenConvertToMarkdown()
-        {
+        public void WhenThereHtmlWithHrefAndNoSchema_WhitelistedEmptyString_ThenConvertToMarkdown() {
             CheckConversion(
                 html: @"<a href=""example.com"">yeah</a>",
                 expected: @"[yeah](example.com)",
-                config: new Config()
-                {
+                config: new Config() {
                     WhitelistUriSchemes = new[] {""}
                 }
             );
         }
 
         [Fact]
-        public void WhenThereHtmlWithHrefAndNoSchema_NotWhitelisted_ThenConvertToPlain()
-        {
+        public void WhenThereHtmlWithHrefAndNoSchema_NotWhitelisted_ThenConvertToPlain() {
             CheckConversion(
                 html: @"<a href=""example.com"">yeah</a>",
                 expected: @"yeah",
-                config: new Config()
-                {
-                    WhitelistUriSchemes = new[] {"whatever"}
+                config: new Config() {
+                    WhitelistUriSchemes = new[] { "whatever" }
                 }
             );
         }
 
-        [Fact]
-        public void WhenThereIsHtmlLinkWithDisallowedCharsInChildren_ThenEscapeTextInMarkdown()
-        {
-            CheckConversion(
-                html: @"<a href=""http://example.com"">this ]( might break things</a>",
-                expected: @"[this \]( might break things](http://example.com)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
-                }
-            );
-        }
 
         [Fact]
-        public void WhenThereIsHtmlLinkWithParensInHref_ThenEscapeHrefInMarkdown()
-        {
-            CheckConversion(
-                html: @"<a href=""http://example.com?id=foo)bar"">link</a>",
-                expected: @"[link](http://example.com?id=foo%29bar)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
-                }
-            );
-        }
-
-        [Fact]
-        public void WhenThereIsHtmlWithProtocolRelativeUrlHrefAndNameNotMatching_SmartHandling_ThenConvertToMarkdown()
-        {
+        public void WhenThereIsHtmlWithProtocolRelativeUrlHrefAndNameNotMatching_SmartHandling_ThenConvertToMarkdown() {
             CheckConversion(
                 html: @"<a href=""//example.com"">example.com</a>",
                 expected: @"[example.com](//example.com)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
         }
 
 
         [Fact]
-        public void WhenThereIsHtmlWithHrefAndNameNotMatching_SmartHandling_ThenConvertToMarkdown()
-        {
+        public void WhenThereIsHtmlWithHrefAndNameNotMatching_SmartHandling_ThenConvertToMarkdown() {
             CheckConversion(
                 html: @"<a href=""https://example.com"">Something intact</a>",
                 expected: @"[Something intact](https://example.com)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsHtmlWithHrefAndNameMatching_SmartHandling_ThenConvertToPlain()
-        {
+        public void WhenThereIsHtmlWithHrefAndNameMatching_SmartHandling_ThenConvertToPlain() {
             CheckConversion(
                 html: @"<a href=""http://example.com/abc?x"">http://example.com/abc?x</a>",
                 expected: @"http://example.com/abc?x",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsHtmlWithHttpSchemeAndNameWithoutScheme_SmartHandling_ThenConvertToPlain()
-        {
+        public void WhenThereIsHtmlWithHttpSchemeAndNameWithoutScheme_SmartHandling_ThenConvertToPlain() {
             CheckConversion(
                 html: @"<a href=""http://example.com"">example.com</a>",
                 expected: @"http://example.com",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
 
             CheckConversion(
                 html: @"<a href=""https://example.com"">example.com</a>",
                 expected: @"https://example.com",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsHtmlWithMailtoSchemeAndNameWithoutScheme_SmartHandling_ThenConvertToPlain()
-        {
+        public void WhenThereIsHtmlWithMailtoSchemeAndNameWithoutScheme_SmartHandling_ThenConvertToPlain() {
             CheckConversion(
                 html: @"<a href=""mailto:george@example.com"">george@example.com</a>",
                 expected: @"george@example.com",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsHtmlWithTelSchemeAndNameWithoutScheme_SmartHandling_ThenConvertToPlain()
-        {
+        public void WhenThereIsHtmlWithTelSchemeAndNameWithoutScheme_SmartHandling_ThenConvertToPlain() {
             CheckConversion(
                 html: @"<a href=""tel:+1123-45678"">+1123-45678</a>",
                 expected: @"+1123-45678",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsHtmlLinkWithHttpSchemaAndNameWithout_SmartHandling_ThenOutputOnlyHref()
-        {
+        public void WhenThereIsHtmlLinkWithHttpSchemaAndNameWithout_SmartHandling_ThenOutputOnlyHref() {
             CheckConversion(
                 html: @"<a href=""http://example.com"">example.com</a>",
                 expected: @"http://example.com",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
             CheckConversion(
-                html: @"<a href=""https://example.com"">example.com</a>",
-                expected: @"https://example.com",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
-                }
+                    html: @"<a href=""https://example.com"">example.com</a>",
+                    expected: @"https://example.com",
+                    config: new Config() {
+                        HrefHandling = Config.HrefHandlingOption.Smart
+                    }
             );
         }
 
         [Fact]
-        public void WhenThereIsHtmlNonWellFormedLinkLink_SmartHandling_ThenConvertToMarkdown()
-        {
+        public void WhenThereIsHtmlNonWellFormedLinkLink_SmartHandling_ThenConvertToMarkdown() {
             //The string is not correctly escaped.	
             CheckConversion(
                 html: @"<a href=""http://example.com/path/file name.docx"">http://example.com/path/file name.docx</a>",
-                expected: @"[http://example.com/path/file name.docx](http://example.com/path/file%20name.docx)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
-                });
+                expected: @"[http://example.com/path/file name.docx](http://example.com/path/file name.docx)",
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
+            });
             //The string is an absolute Uri that represents an implicit file Uri.	
             CheckConversion(
                 html: @"<a href=""c:\\directory\filename"">	c:\\directory\filename</a>",
                 expected: @"[c:\\directory\filename](c:\\directory\filename)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
-                });
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
+            });
             //The string is an absolute URI that is missing a slash before the path.	
             CheckConversion(
                 html: @"<a href=""file://c:/directory/filename"">file://c:/directory/filename</a>",
                 expected: @"[file://c:/directory/filename](file://c:/directory/filename)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
-                });
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
+            });
             //The string contains unescaped backslashes even if they are treated as forward slashes.	
             CheckConversion(
                 html: @"<a href=""http:\\host/path/file"">http:\\host/path/file</a>",
                 expected: @"[http:\\host/path/file](http:\\host/path/file)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
-                });
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
+            });
         }
 
 
         [Fact]
-        public void WhenThereIsHtmlLinkWithoutHttpSchemaAndNameWithoutScheme_SmartHandling_ThenConvertToMarkdown()
-        {
+        public void WhenThereIsHtmlLinkWithoutHttpSchemaAndNameWithoutScheme_SmartHandling_ThenConvertToMarkdown() {
             CheckConversion(
                 html: @"<a href=""ftp://example.com"">example.com</a>",
                 expected: @"[example.com](ftp://example.com)",
-                config: new Config()
-                {
-                    SmartHrefHandling = true
+                config: new Config() {
+                    HrefHandling = Config.HrefHandlingOption.Smart
                 }
             );
         }
 
         [Fact]
-        public void WhenThereAreStrongTag_ThenConvertToMarkdownDoubleAsterisks()
+        public void WhenThereAreStrongTag_ThenConvertToMarkdownDoubleAstericks()
         {
             const string html = @"This paragraph contains <strong>bold</strong> text";
             const string expected = @"This paragraph contains **bold** text";
@@ -420,14 +363,13 @@ namespace ReverseMarkdown.Test
             CheckConversion(html, expected);
         }
 
-        [Fact]
-        public void WhenThereIsEmptyBlockquoteTag_ThenConvertToMarkdownBlockquote()
-        {
-            const string html = @"This text has <blockquote></blockquote>. This text appear after header.";
-            var expected =
-                $"This text has {Environment.NewLine}{Environment.NewLine}{Environment.NewLine}. This text appear after header.";
-            CheckConversion(html, expected);
-        }
+		[Fact]
+		public void WhenThereIsEmptyBlockquoteTag_ThenConvertToMarkdownBlockquote()
+		{
+			const string html = @"This text has <blockquote></blockquote>. This text appear after header.";
+			string expected = $"This text has {Environment.NewLine}{Environment.NewLine}. This text appear after header.";
+			CheckConversion(html, expected);
+		}
 
         [Fact]
         public void WhenThereIsParagraphTag_ThenConvertToMarkdownDoubleLineBreakBeforeAndAfter()
@@ -438,14 +380,13 @@ namespace ReverseMarkdown.Test
             CheckConversion(html, expected);
         }
 
-        [Fact]
-        public void WhenThereIsHorizontalRule_ThenConvertToMarkdownHorizontalRule()
-        {
-            const string html = @"This text has horizontal rule.<hr/>Next line of text";
-            var expected =
-                $"This text has horizontal rule.{Environment.NewLine}* * *{Environment.NewLine}Next line of text";
-            CheckConversion(html, expected);
-        }
+		[Fact]
+		public void WhenThereIsHorizontalRule_ThenConvertToMarkdownHorizontalRule()
+		{
+			const string html = @"This text has horizontal rule.<hr/>Next line of text";
+			string expected = $"This text has horizontal rule.{Environment.NewLine}* * *{Environment.NewLine}Next line of text";
+			CheckConversion(html, expected);
+		}
 
         [Fact]
         public void WhenThereIsImgTag_ThenConvertToMarkdownImage()
@@ -476,110 +417,56 @@ namespace ReverseMarkdown.Test
         }
 
         [Fact]
-        public void WhenThereIsImgTagWithMutlilineAltText_ThenEnsureNoBlankLinesInMarkdownAltText()
-        {
-            string html =
-                $@"This text has image <img alt=""cat{Environment.NewLine}{Environment.NewLine}dog"" src=""http://test.com/images/test.png""/>. Next line of text";
-            string expected = $@"This text has image ![cat{Environment.NewLine}dog](http://test.com/images/test.png). Next line of text";
-            CheckConversion(html, expected);
-        }
-
-        [Fact]
-        public void WhenThereIsImgTagWithBracesInAltText_ThenEnsureAltTextIsEscapedInMarkdown()
-        {
-            string html =
-                $@"This text has image <img alt=""a]b"" src=""http://test.com/images/test.png""/>. Next line of text";
-            string expected = $@"This text has image ![a\]b](http://test.com/images/test.png). Next line of text";
-            CheckConversion(html, expected);
-        }
-
-        [Fact]
-        public void WhenThereIsImgTag_SchemeNotWhitelisted_ThenEmptyOutput()
-        {
+        public void WhenThereIsImgTag_SchemeNotWhitelisted_ThenEmptyOutput() {
             CheckConversion(
                 html: @"<img src=""data:image/gif;base64,R0lGODlhEAAQ...""/>",
                 expected: @"",
-                config: new Config()
-                {
+                config: new Config() {
                     WhitelistUriSchemes = new[] {"http"}
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsImgTag_SchemeIsWhitelisted_ThenConvertToMarkdown()
-        {
+        public void WhenThereIsImgTag_SchemeIsWhitelisted_ThenConvertToMarkdown() {
             CheckConversion(
                 html: @"<img src=""data:image/gif;base64,R0lGODlhEAAQ...""/>",
                 expected: @"![](data:image/gif;base64,R0lGODlhEAAQ...)",
-                config: new Config()
-                {
-                    WhitelistUriSchemes = new[] {"data"}
+                config: new Config() {
+                    WhitelistUriSchemes = new[] { "data" }
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsImgTagAndSrcWithNoSchema_WhitelistedEmptyString_ThenConvertToMarkdown()
-        {
+        public void WhenThereIsImgTagAndSrcWithNoSchema_WhitelistedEmptyString_ThenConvertToMarkdown() {
             CheckConversion(
                 html: @"<img src=""example.com""/>",
                 expected: @"![](example.com)",
-                config: new Config()
-                {
-                    WhitelistUriSchemes = new[] {""}
+                config: new Config() {
+                    WhitelistUriSchemes = new[] { "" }
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsImgTagAndSrcWithNoSchema_NotWhitelisted_ThenConvertToPlain()
-        {
+        public void WhenThereIsImgTagAndSrcWithNoSchema_NotWhitelisted_ThenConvertToPlain() {
             CheckConversion(
                 html: @"<img src=""data:image/gif;base64,R0lGODlhEAAQ...""/>",
                 expected: @"",
-                config: new Config()
-                {
-                    WhitelistUriSchemes = new[] {"whatever"}
+                config: new Config() {
+                    WhitelistUriSchemes = new[] { "whatever" }
                 }
             );
         }
 
         [Fact]
-        public void WhenThereIsImgTagWithRelativeUrl_NotWhitelisted_ThenConvertToMarkdown()
-        {
-            CheckConversion(
-                html: @"<img src=""/example.gif""/>",
-                expected: @"",
-                config: new Config()
-                {
-                    WhitelistUriSchemes = new[] {"data"}
-                }
-            );
-        }
-
-        [Fact]
-        public void WhenThereIsImgTagWithUnixUrl_ConfigHasWhitelist_ThenConvertToMarkdown()
-        {
+        public void WhenThereIsImgTagWithRelativeUrl_ConfitHasWhitelist_ThenConvertToMarkdown() {
             CheckConversion(
                 html: @"<img src=""/example.gif""/>",
                 expected: @"![](/example.gif)",
-                config: new Config()
-                {
-                    WhitelistUriSchemes = new[] {"file"}
-                }
-            );
-        }
-
-        [Fact]
-        public void WhenThereIsImgTagWithHttpProtocolRelativeUrl_ConfigHasWhitelist_ThenConvertToMarkdown()
-        {
-            CheckConversion(
-                html: @"<img src=""//example.gif""/>",
-                expected: @"![](//example.gif)",
-                config: new Config()
-                {
-                    WhitelistUriSchemes = new[] {"http"}
+                config: new Config() {
+                    WhitelistUriSchemes = new[] { "data" }
                 }
             );
         }
@@ -593,14 +480,13 @@ namespace ReverseMarkdown.Test
             CheckConversion(html, expected);
         }
 
-        [Fact]
-        public void WhenThereIsEmptyPreTag_ThenConvertToMarkdownPre()
-        {
-            const string html = @"This text has pre tag content <pre><br/ ></pre>Next line of text";
-            var expected =
-                $"This text has pre tag content {Environment.NewLine}{Environment.NewLine}{Environment.NewLine}Next line of text";
-            CheckConversion(html, expected);
-        }
+		[Fact]
+		public void WhenThereIsEmptyPreTag_ThenConvertToMarkdownPre()
+		{
+			const string html = @"This text has pre tag content <pre><br/ ></pre>Next line of text";
+			string expected = $"This text has pre tag content {Environment.NewLine}{Environment.NewLine}Next line of text";
+			CheckConversion(html, expected);
+		}
 
         [Fact]
         public void WhenThereIsUnorderedList_ThenConvertToMarkdownList()
@@ -735,7 +621,7 @@ namespace ReverseMarkdown.Test
             };
             var converter = new Converter(config);
             var result = converter.Convert(html);
-            Assert.Equal(expected, result);
+            Assert.True(string.CompareOrdinal(expected, result) == 0);
         }
 
         [Fact]
@@ -750,7 +636,7 @@ namespace ReverseMarkdown.Test
 
             var converter = new Converter(config);
             var result = converter.Convert(html);
-            Assert.Equal(expected, result);
+            Assert.True(string.CompareOrdinal(expected, result) == 0);
         }
 
         [Fact]
@@ -766,7 +652,7 @@ namespace ReverseMarkdown.Test
 
             var converter = new Converter(config);
             var result = converter.Convert(html);
-            Assert.Equal(expected, result);
+            Assert.True(string.CompareOrdinal(expected, result) == 0);
         }
 
         [Fact]
@@ -1010,16 +896,14 @@ namespace ReverseMarkdown.Test
             Assert.Equal(expected, result);
         }
 
-        [Fact]
-        public void WhenThereAreLineBreaksEncompassingParagraphText_It_Should_be_Removed()
-        {
-
-            var html = $"<p>{Environment.NewLine}Some text goes here.{Environment.NewLine}</p>";
-            var expected = $"{Environment.NewLine}Some text goes here.{Environment.NewLine}";
-
-            var converter = new Converter();
+        private static void CheckConversion(string html, string expected, Config config = null) {
+            config = config ?? new Config();
+            if (expected == null) throw new ArgumentNullException(nameof(expected));
+            
+            var converter = new Converter(config);
             var result = converter.Convert(html);
-            Assert.Equal(expected, result);
+            Assert.Equal(expected, result, StringComparer.OrdinalIgnoreCase);
+            //Assert.True(string.CompareOrdinal(expected, result) == 0);
         }
 
         [Fact]

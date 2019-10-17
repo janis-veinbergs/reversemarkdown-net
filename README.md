@@ -22,40 +22,39 @@ string result = converter.Convert(html);
 
 ```csharp
 // with config
-var config = new ReverseMarkdown.Config
-{
-    UnknownTags = Config.UnknownTagsOption.PassThrough, // Include the unknown tag completely in the result (default as well)
-    GithubFlavored = true, // generate GitHub flavoured markdown, supported for BR, PRE and table tags
-    RemoveComments = true, // will ignore all comments
-    SmartHrefHandling = true // remove markdown output for links where appropriate
-};
+bool githubFlavored = true; // generate GitHub flasvoured markdown, supported for BR, PRE and table tags
+bool removeComments = true; // will ignore all comments
+var config = new ReverseMarkdown.Config(UnknownTagsOption.PassThrough, 
+                githubFlavoured:githubFlavoured, removeComments:removeComments) {
+                    new Config() {
+                        HrefHandling = Config.HrefHandlingOption.Smart,
+                        WhitelistUriSchemes = new string[] {"http", "https", "ftp", "ftps", "file"}
+                    }
 
+                };
 var converter = new ReverseMarkdown.Converter(config);
 ```
 
 ## Configuration options
 * `GithubFlavored` - Github style markdown for br, pre and table. Default is false
-* `RemoveComments` - Remove comment tags with text. Default is false
-* `SmartHrefHandling` - how to handle `<a>` tag href attribute
-  * `false` - Outputs `[{name}]({href}{title})` even if name and href is identical. This is the default option.
-  * `true` - If name and href equals, outputs just the `name`. Note that if Uri is not well formed as per [`Uri.IsWellFormedUriString`](https://docs.microsoft.com/en-us/dotnet/api/system.uri.iswellformeduristring) (i.e string is not correctly escaped like `http://example.com/path/file name.docx`) then markdown syntax will be used anyway.
+* `RemoveComments` - Remove comment tags with text. Default is true
+* `BarePlaintext` - Convert to bare plaintext, not markdown. Default is false
+* `CompressNewlines` - Cleans output so that it doesn't contain double newline characters. Default is true
+* `HrefHandling` - how to handle `<a>` tag href attribute
+  * `None` - Outputs `[{name}]({href}{title})` even if name and href is identical. This is the default option.
+  * `Smart` - If name and href equals, outputs just the name instead of `[{name}]({href}{title})`. Note that if Uri is not well formed (string is not correctly escaped like `http://example.com/path/file name.docx`) then markdown syntax will be used anyway.
                
     If `href` contains `http/https` protocol, and `name` doesn't but otherwise are the same, output `href` only
     
     If `tel:` or `mailto:` scheme, but afterwards identical with name, output `name` only.
-* `UnknownTags` - handle unknown tags. 
+* `UnknownTags` - how to handle unknown tags. 
   * `UnknownTagsOption.PassThrough` - Include the unknown tag completely into the result. That is, the tag along with the text will be left in output. This is the default
   * `UnknownTagsOption.Drop` - Drop the unknown tag and its content
   * `UnknownTagsOption.Bypass` - Ignore the unknown tag but try to convert its content
   * `UnknownTagsOption.Raise` - Raise an error to let you know
 * `WhitelistUriSchemes` - Specify which schemes (without trailing colon) are to be allowed for `<a>` and `<img>` tags. Others will be bypassed (output text or nothing). By default allows everything.
 
-  If `string.Empty` provided and when `href` or `src` schema coudn't be determined - whitelists
-  
-  Schema is determined by `Uri` class, with exception when url begins with `/` (file schema) and `//` (http schema)
-* `TableWithoutHeaderRowHandling` - handle table without header rows
-  * `TableWithoutHeaderRowHandlingOption.Default` - First row will be used as header row (default)
-  * `TableWithoutHeaderRowHandlingOption.EmptyRow` - An empty row will be added as the header row
+  If `string.Empty` provided and when `href` schema coudn't be determined - whitelists
 
 > Note that UnknownTags config has been changed to an enumeration in v2.0.0 (breaking change)
 

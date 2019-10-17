@@ -11,9 +11,14 @@ namespace ReverseMarkdown.Converters
             Converter.Register("br", this);
         }
 
-        public override string Convert(HtmlNode node)
-        {
-            return Converter.Config.GithubFlavored ? Environment.NewLine : $"  {Environment.NewLine}";
+		public override string Convert(HtmlNode node)
+		{
+			if (this.Converter.Config.GithubFlavored || this.Converter.Config.BarePlaintext)
+			{
+				return Environment.NewLine;
+			}
+
+            return $"  {Environment.NewLine}";
         }
     }
 }

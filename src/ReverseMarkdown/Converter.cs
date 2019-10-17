@@ -14,6 +14,9 @@ namespace ReverseMarkdown
         private readonly IConverter _dropTagsConverter;
         private readonly IConverter _byPassTagsConverter;
 
+        private static readonly string _nl = Environment.NewLine;
+        private static readonly string _nlnl = _nl + _nl;
+        private static readonly string _nlnlnl = _nlnl + _nl;
         public Converter() : this(new Config()) {}
 
         public Converter(Config config)
@@ -48,10 +51,28 @@ namespace ReverseMarkdown
 
             var root = doc.DocumentNode;
 
-            var result = Lookup(root.Name).Convert(root);
+            var body = root.SelectSingleNode("//body");
+            if (body != null)
+            {
+                return this.Lookup(body.Name).Convert(body);
+            }
 
-            return result;
-        }
+			string result = this.Lookup(root.Name).Convert(root);
+
+            if (Config.CompressNewlines)
+            {
+                int oldlen = result.Length;
+                while (true)
+                {
+                    result = result.Replace(_nlnlnl, _nlnl);
+                    int newlen = result.Length;
+                    if (newlen == oldlen) break;
+                    oldlen = newlen;
+                }
+            }
+
+			return result;
+		}
 
         public void Register(string tagName, IConverter converter)
         {
@@ -63,11 +84,35 @@ namespace ReverseMarkdown
             return _converters.ContainsKey(tagName) ? _converters[tagName] : GetDefaultConverter(tagName);
         }
 
-        private IConverter GetDefaultConverter(string tagName)
+        public IEnumerable<KeyValuePair<string, int>> DefaultedTagCounts
         {
-            switch (Config.UnknownTags)
+            get { return _defaultedTagCount; }
+        }
+
+        public string DefaultedTagContext(string tagName)
+        {
+            return _defaultedTagContext[tagName];
+        }
+
+        public string CurrentContext = null;
+
+        protected Dictionary<string, int> _defaultedTagCount = new Dictionary<string, int>();
+        protected Dictionary<string, string> _defaultedTagContext = new Dictionary<string, string>();
+
+		protected IConverter GetDefaultConverter(string tagName)
+		{
+            if (CurrentContext != null)
             {
-                case Config.UnknownTagsOption.PassThrough:
+                if (!_defaultedTagCount.TryGetValue(tagName, out int count))
+                {
+                    count = 0;
+                    _defaultedTagContext[tagName] = CurrentContext;
+                }
+                _defaultedTagCount[tagName] = count + 1;
+            }
+			switch (this.Config.UnknownTags)
+			{
+				case Config.UnknownTagsOption.PassThrough:
                     return _passThroughTagsConverter;
                 case Config.UnknownTagsOption.Drop:
                     return _dropTagsConverter;
